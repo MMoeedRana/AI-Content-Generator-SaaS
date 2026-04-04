@@ -16,6 +16,7 @@ import OutputSection from "../_components/OutputSection";
 import { TEMPLATE } from "../../_components/TemplateListSection";
 import { TotalUsageContext } from "@/app/(context)/TotalUsageContext";
 import { UpdateCreditUsageContext } from "@/app/(context)/UpdateCreditUsageContext";
+import { toast } from "sonner";
 
 interface PROPS {
   params: Promise<{
@@ -26,43 +27,48 @@ interface PROPS {
 function CreateNewContent(props: PROPS) {
   const params = React.use(props.params);
   const selectedTemplate: TEMPLATE | undefined = Templates?.find(
-    (item) => item.slug === params["template-slug"]
+    (item) => item.slug === params["template-slug"],
   );
 
   const [loading, setLoading] = useState(false);
   const [aiOutput, setAiOutput] = useState<string>("");
   const { user } = useUser();
   const { setUpdateCreditUsage } = useContext(UpdateCreditUsageContext);
+  const { totalUsage, setTotalUsage } = useContext(TotalUsageContext);
+  const [maxWords, setMaxWords] = useState(10000);
 
-  /**
-   * Generate content using NEW Google GenAI SDK
-   */
   const GenerateAIContent = async (formData: any) => {
+    if (totalUsage >= maxWords) {
+      toast.error(
+        "You have exhausted your monthly credits. Please upgrade your plan.",
+      );
+      return;
+    }
     setLoading(true);
     const SelectedPrompt = selectedTemplate?.aiPrompt;
     const FinalAIPrompt = JSON.stringify(formData) + ", " + SelectedPrompt;
 
     try {
-      // Nayi SDK ka call: aiClient.models.generateContent
       const result = await aiClient.models.generateContent({
         model: AI_MODEL_NAME,
-        contents: [{ role: 'user', parts: [{ text: FinalAIPrompt }] }],
+        contents: [{ role: "user", parts: [{ text: FinalAIPrompt }] }],
         config: {
           temperature: 1,
           maxOutputTokens: 8192,
           responseMimeType: "text/plain",
-        }
+        },
       });
 
-      // Nayi SDK mein response direct text property mein hota hai
-      const aiResponse = result.text; 
+      const aiResponse = result.text;
 
       if (aiResponse) {
         setAiOutput(aiResponse);
-        // Save to Database
-        await SaveInDb(JSON.stringify(formData), selectedTemplate?.slug, aiResponse);
+        await SaveInDb(
+          JSON.stringify(formData),
+          selectedTemplate?.slug,
+          aiResponse,
+        );
       }
-      
     } catch (error) {
       console.error("Error with New SDK Content Generation:", error);
     } finally {
@@ -71,10 +77,11 @@ function CreateNewContent(props: PROPS) {
     setUpdateCreditUsage(Date.now());
   };
 
-  /**
-   * Save in DB logic
-   */
-  const SaveInDb = async (formData: string, slug: string | undefined, aiResp: string) => {
+  const SaveInDb = async (
+    formData: string,
+    slug: string | undefined,
+    aiResp: string,
+  ) => {
     if (!slug || !user?.primaryEmailAddress?.emailAddress) {
       console.error("Missing required data for saving to DB.");
       return;
@@ -86,7 +93,7 @@ function CreateNewContent(props: PROPS) {
         templateSlug: slug,
         aiResponse: aiResp,
         createdBy: user.primaryEmailAddress.emailAddress,
-        createdAt: moment().format('DD/MM/yyyy'),
+        createdAt: moment().format("DD/MM/yyyy"),
       });
       console.log("Data successfully saved to DB.");
     } catch (error) {
@@ -94,10 +101,24 @@ function CreateNewContent(props: PROPS) {
     }
   };
 
+  React.useEffect(() => {
+    const fetchCredits = async () => {
+      if (!user?.primaryEmailAddress?.emailAddress) return;
+      try {
+        const resp = await fetch(
+          `/api/credits-usage?email=${user.primaryEmailAddress.emailAddress}`,
+        );
+        const data = await resp.json();
+        if (data.maxWords !== undefined) setMaxWords(data.maxWords);
+      } catch {}
+    };
+    fetchCredits();
+  }, [user?.primaryEmailAddress?.emailAddress]);
+
   return (
-    <div className="p-5">
+    <div className="p-5 dark:bg-slate-900">
       <Link href={"/dashboard"}>
-        <Button className="flex gap-2">
+        <Button className="flex gap-2 dark:bg-slate-800 dark:text-gray-100 dark:hover:bg-slate-700">
           <ArrowLeft className="w-4 h-4" /> Back
         </Button>
       </Link>

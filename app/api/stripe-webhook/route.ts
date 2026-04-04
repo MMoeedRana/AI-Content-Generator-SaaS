@@ -1,3 +1,4 @@
+// app/api/stripe-webhook/route.ts
 import Stripe from "stripe";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -20,52 +21,57 @@ export async function POST(req: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
   } catch (err: any) {
+    console.error(`Webhook Signature Verification Failed: ${err.message}`);
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
   // Handle successful checkout
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    // Stripe session metadata should have userId (set in create-stripe-session)
-    const userId = session.metadata?.userId || null;
-    const customer_email = session.customer_email ?? "";
-    const paymentId = session.payment_intent as string | null;
+    
+    // Sab se safe email source: customer_details
+    const userEmail = session.customer_details?.email || session.metadata?.userEmail;
     const userName = session.metadata?.userName || "";
+    const paymentId = session.subscription as string; // Subscriptions mein subscription ID hoti hai
+
+    if (!userEmail) {
+      return new NextResponse("User Email not found", { status: 400 });
+    }
 
     try {
       // Find existing subscription
-      // Only check if email is present
-      let existing = [];
-      if (customer_email) {
-        existing = await db
-          .select()
-          .from(UserSubscription)
-          .where(eq(UserSubscription.email, customer_email));
-      }
+      const existing = await db
+        .select()
+        .from(UserSubscription)
+        .where(eq(UserSubscription.email, userEmail));
 
-      // Insert or update
-      if (!existing.length && customer_email) {
+      if (existing.length === 0) {
+        // Naya record insert karein
         await db.insert(UserSubscription).values({
-          email: customer_email,
-          userName,
+          email: userEmail,
+          userName: userName,
           active: true,
-          paymentId,
+          paymentId: paymentId,
           joinDate: moment().format("DD/MM/YYYY"),
         });
-      } else if (customer_email) {
+        console.log(`New subscription created for ${userEmail}`);
+      } else {
+        // Purana record update karein
         await db
           .update(UserSubscription)
           .set({
             active: true,
-            paymentId,
+            paymentId: paymentId,
             joinDate: moment().format("DD/MM/YYYY"),
           })
-          .where(eq(UserSubscription.email, customer_email));
+          .where(eq(UserSubscription.email, userEmail));
+        console.log(`Subscription updated for ${userEmail}`);
       }
     } catch (e) {
-      console.log("DB Insert/Update error:", e);
+      console.error("Database Update Error:", e);
+      return new NextResponse("Database Error", { status: 500 });
     }
   }
 
-  return new NextResponse("Webhook received", { status: 200 });
+  return new NextResponse("Webhook handled successfully", { status: 200 });
 }

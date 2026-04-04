@@ -1,5 +1,5 @@
 // /app/api/create-stripe-session/route.ts
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -9,13 +9,18 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST() {
   const { userId } = await auth();
-  if (!userId) {
+  const user = await currentUser(); // Clerk se user details nikalne ke liye
+
+  if (!userId || !user) {
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
   }
+
+  const userEmail = user.primaryEmailAddress?.emailAddress;
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     mode: "subscription",
+    customer_email: userEmail, // Pehle se email fill karne ke liye
     line_items: [
       {
         price: process.env.STRIPE_PRICE_ID!,
@@ -25,7 +30,9 @@ export async function POST() {
     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=true`,
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?canceled=true`,
     metadata: {
-      userId,
+      userId: userId,
+      userEmail: userEmail || "",
+      userName: user.fullName || ""
     },
   });
 

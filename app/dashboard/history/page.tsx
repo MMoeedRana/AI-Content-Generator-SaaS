@@ -1,65 +1,58 @@
-import Templates from '@/app/(data)/Templates'
-import { db } from '@/utils/db'
-import { AIOutput } from '@/utils/schema'
-import { currentUser } from '@clerk/nextjs/server'
-import { desc, eq } from 'drizzle-orm'
-import Image from 'next/image'
-import React from 'react'
-import { TEMPLATE } from '../_components/TemplateListSection'
-import CopyButton from './_components/CopyButton'
+import { db } from '@/utils/db';
+import { AIOutput, UserSubscription } from '@/utils/schema';
+import { currentUser } from '@clerk/nextjs/server';
+import { desc, eq, and } from 'drizzle-orm';
+import React from 'react';
+import HistoryList from './_components/HistoryList';
 
-export interface HISTORY{
-    id:Number,
-    formData:string,
-    aiResponse:string,
-    templateSlug:string,
-    createdBy:string,
-    createdAt:string
-}
-async function History() {
+async function HistoryPage() {
+    const user = await currentUser();
+    const email = user?.primaryEmailAddress?.emailAddress || '';
+
+    // Check Plan
+    const sub = await db.select().from(UserSubscription)
+        .where(and(eq(UserSubscription.email, email), eq(UserSubscription.active, true)));
     
-    const user=await currentUser();
+    const plan = sub.length > 0 ? 'paid' : 'free';
 
-    {/* @ts-ignore */}
-    const HistoryList:HISTORY[]=await db.select().from(AIOutput).where(eq(AIOutput?.createdBy,user?.primaryEmailAddress?.emailAddress))
-    .orderBy(desc(AIOutput.id))
-    ;
+    // Fetch All History
+    const historyData = await db.select().from(AIOutput)
+        .where(eq(AIOutput.createdBy, email))
+        .orderBy(desc(AIOutput.id));
 
-    const GetTemplateName=(slug:string)=>{
+    return (
+        <div className='m-5 p-10 border rounded-lg bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-700 min-h-screen transition-colors duration-300'>
+            
+            <div className='flex justify-between items-center dark:bg-slate-900'>
+                
+                {/* Title Section */}
+                <div className='dark:bg-slate-900'>
+                    <h2 className='font-bold text-3xl text-black dark:text-white'>
+                        Content History
+                    </h2>
+                    <p className='text-gray-500 dark:text-gray-400'>
+                        Manage and reuse your previous AI generations
+                    </p>
+                </div>
 
-        const template:TEMPLATE|any=Templates?.find((item)=>item.slug==slug)
-        return template;
-    }
-  return (
-    <div className='m-5 p-5 border rounded-lg bg-white'>
-        <h2 className='font-bold text-3xl'>History</h2>
-        <p className='text-gray-500'>Search your previously generate AI content</p>
-        <div className='grid grid-cols-7 font-bold bg-secondary mt-5 py-3 px-3'>
-            <h2 className='col-span-2'>TEMPLATE</h2>
-            <h2 className='col-span-2'>AI RESP</h2>
-            <h2>DATE</h2>
-            <h2>WORDS</h2>
-            <h2>COPY</h2>
-        </div>
-        {HistoryList.map((item:HISTORY,index:number)=>(
-            <div key={index}>
-            <div className='grid grid-cols-7 my-5 py-3 px-3'>
-            <h2 className='col-span-2 flex gap-2 items-center'>
-                <Image src={GetTemplateName(item?.templateSlug)?.icon} width={25} height={25} alt='icon' />
-                {GetTemplateName(item.templateSlug)?.name}
-            </h2>
-            <h2 className='col-span-2 line-clamp-3 mr-3'>{item?.aiResponse}</h2>
-            <h2>{item.createdAt}</h2>
-            <h2>{item.aiResponse.split(/\s+/).filter(Boolean).length}</h2>
-            <h2>
-              <CopyButton aiResponse={item.aiResponse} />
-            </h2>
-        </div>
-        <hr/>
+                {/* Plan Badge */}
+                <div className='text-right'>
+                   <span 
+                     className={`px-4 py-1 rounded-full text-sm font-bold 
+                     ${plan === 'paid' 
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                     }`}
+                   >
+                        {plan.toUpperCase()} PLAN
+                   </span>
+                </div>
+
             </div>
-        ))}
-    </div>
-  )
+            
+            <HistoryList initialHistory={historyData} plan={plan} />
+        </div>
+    );
 }
 
-export default History
+export default HistoryPage;

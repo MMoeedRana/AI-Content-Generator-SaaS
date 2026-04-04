@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { toast, ToastContainer } from 'react-toastify';
+// @ts-ignore
 import 'react-toastify/dist/ReactToastify.css';
 
 interface Props {
@@ -19,14 +20,14 @@ function OutputSection({ aiOutput }: Props) {
   };
 
   return (
-    <div className="bg-white shadow-lg border rounded-lg">
+    <div className="bg-white shadow-lg border rounded-lg dark:bg-slate-900 dark:border-gray-700">
       <div className="flex justify-between items-center p-5">
-        <h2 className="font-medium text-lg">Your Result</h2>
-        <Button className="flex gap-2" onClick={handleCopy}>
+        <h2 className="font-medium text-lg text-gray-900 dark:text-gray-100">Your Result</h2>
+        <Button className="flex gap-2 dark:bg-slate-800 dark:text-gray-100 dark:hover:bg-slate-700" onClick={handleCopy}>
           <Copy className="w-4 h-4" /> Copy
         </Button>
       </div>
-      <div className="p-5 prose max-w-none">
+      <div className="p-5 prose max-w-none dark:prose-invert dark:text-gray-100">
         <ReactMarkdown>{aiOutput || 'Your result will appear here'}</ReactMarkdown>
       </div>
       <ToastContainer position="top-right" autoClose={1500} hideProgressBar />

@@ -34,9 +34,8 @@ function TemplateListSection({ userSearchInput }: any) {
   }, [userSearchInput]);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-10">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-10 bg-white dark:bg-slate-950 transition-colors duration-300">
       {templateList.map((item: TEMPLATE, index: number) => (
-        // Add the unique "key" prop here, using a unique property such as `slug`.
         <TemplateCard key={item.slug} {...item} />
       ))}
     </div>
