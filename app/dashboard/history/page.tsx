@@ -42,21 +42,21 @@ async function History() {
             <h2>COPY</h2>
         </div>
         {HistoryList.map((item:HISTORY,index:number)=>(
-            <>
-            <div key={index} className='grid grid-cols-7 my-5 py-3 px-3'>
+            <div key={index}>
+            <div className='grid grid-cols-7 my-5 py-3 px-3'>
             <h2 className='col-span-2 flex gap-2 items-center'>
                 <Image src={GetTemplateName(item?.templateSlug)?.icon} width={25} height={25} alt='icon' />
                 {GetTemplateName(item.templateSlug)?.name}
             </h2>
             <h2 className='col-span-2 line-clamp-3 mr-3'>{item?.aiResponse}</h2>
             <h2>{item.createdAt}</h2>
-            <h2>{item?.aiResponse.length}</h2>
+            <h2>{item.aiResponse.split(/\s+/).filter(Boolean).length}</h2>
             <h2>
               <CopyButton aiResponse={item.aiResponse} />
             </h2>
         </div>
         <hr/>
-            </>
+            </div>
         ))}
     </div>
   )

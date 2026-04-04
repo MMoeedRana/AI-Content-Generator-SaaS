@@ -8,11 +8,27 @@ import { Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 // import { UserSubscription } from "@/utils/schema";
 import React, { useContext, useState } from "react";
-import { UserSubscriptionContext } from "@/app/(context)/UserSubscriptionContext";
+import { toast } from "sonner";
 
 function Billing() {
-  const [loading,setLoading]=useState(false);
-  const {user}=useUser();
+  const [loading, setLoading] = useState(false);
+  const { user } = useUser();
+
+  // Stripe checkout handler
+  const handleStripeCheckout = async () => {
+    setLoading(true);
+    try {
+      const resp = await axios.post("/api/create-stripe-session", {});
+      if (resp.data?.url) {
+        window.location.href = resp.data.url;
+      } else {
+        toast.error("Stripe session URL not found.");
+      }
+    } catch (err) {
+      toast.error("Stripe payment initialization failed.");
+    }
+    setLoading(false);
+  };
   //   const {userSubscription,setUserSubscription}=useContext(UserSubscriptionContext)
   // const CreateSubscription = () => {
   //   setLoading(true);
@@ -76,7 +92,12 @@ function Billing() {
               <h3 className="text-lg text-gray-900 font-semibold">Free</h3>
             </div>
 
-            <div className="flex justify-center items-center py-3"><span className="font-bold text-4xl text-black text-center">0$</span><span className="text-gray-900 text-center text-md">/month</span></div>
+            <div className="flex justify-center items-center py-3">
+              <span className="font-bold text-4xl text-black text-center">
+                0$
+              </span>
+              <span className="text-gray-900 text-center text-md">/month</span>
+            </div>
 
             <ul className="space-y-3 mb-6">
               <li className="flex items-center gap-2">
@@ -149,9 +170,7 @@ function Billing() {
               </li>
             </ul>
           </div>
-          <Button
-            className="mt-8 w-[80%] mx-auto rounded-full border px-8 py-3 text-center text-sm font-medium text-white bg-gray-500 border-indigo-600 hover:bg-transparent hover:border-2 hover:bg-gray-600 focus:outline-none flex items-center justify-center"
-          >
+          <Button className="mt-8 w-[80%] mx-auto rounded-full border px-8 py-3 text-center text-sm font-medium text-white bg-gray-500 border-indigo-600 hover:bg-transparent hover:border-2 hover:bg-gray-600 focus:outline-none flex items-center justify-center">
             Currently Active Plan
           </Button>
         </div>
@@ -163,7 +182,12 @@ function Billing() {
               <h3 className="text-lg text-gray-900 font-semibold">Monthly</h3>
             </div>
 
-            <div className="flex justify-center items-center py-3"><span className="font-bold text-4xl text-black text-center">9.99$</span><span className="text-gray-900 text-center text-md">/month</span></div>
+            <div className="flex justify-center items-center py-3">
+              <span className="font-bold text-4xl text-black text-center">
+                9.99$
+              </span>
+              <span className="text-gray-900 text-center text-md">/month</span>
+            </div>
 
             <ul className="space-y-3 mb-6">
               <li className="flex items-center gap-2">
@@ -246,12 +270,13 @@ function Billing() {
           </Button> */}
 
           <Button
-          disabled={loading}
+            disabled={loading}
+            onClick={handleStripeCheckout}
             className="mt-8  w-[80%] mx-auto rounded-full border px-8 py-3 text-center text-sm font-medium text-indigo-600 bg-white border-indigo-600 hover:bg-transparent hover:border-2 hover:border-indigo-700 focus:outline-none flex gap-2 items-center justify-center"
           >
+            {loading && <Loader2Icon className="animate-spin" />}
             Get Started
           </Button>
-
         </div>
       </div>
     </div>

@@ -1,27 +1,15 @@
-//utils/AiModal.tsx
-const {
-  GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold,
-} = require("@google/generative-ai");
+import { GoogleGenAI } from '@google/genai';
 
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(apiKey);
 
-const model = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash-exp",
+if (!apiKey) {
+    throw new Error("NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY is not defined");
+}
+
+// Client initialize karein
+export const aiClient = new GoogleGenAI({
+    apiKey: apiKey,
 });
 
-const generationConfig = {
-  temperature: 1,
-  topP: 0.95,
-  topK: 40,
-  maxOutputTokens: 8192,
-  responseMimeType: "text/plain",
-};
-
- export const chatSession = model.startChat({
-    generationConfig,
-    history: [
-    ],
-  });
+// Model name (Latest stable)
+export const AI_MODEL_NAME = 'gemini-3-flash-preview';
