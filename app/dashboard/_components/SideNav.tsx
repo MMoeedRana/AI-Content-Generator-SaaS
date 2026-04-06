@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import UsageTrack from "./UsageTrack";
-import React, { useEffect } from "react";
+import React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { FileClock, Home, Settings, WalletCards } from "lucide-react";
@@ -39,9 +39,19 @@ const SideNav: React.FC = () => {
 
   const path = usePathname();
 
-  useEffect(() => {
-    console.log(path);
-  }, [path]);
+  // ✅ Active tab logic (FIXED)
+  const isActive = (menuPath: string) => {
+    // Home tab
+    if (menuPath === "/dashboard") {
+      return (
+        path === "/dashboard" ||
+        path.startsWith("/dashboard/content")
+      );
+    }
+
+    // Other tabs
+    return path.startsWith(menuPath);
+  };
 
   return (
     <div className="h-screen relative p-5 shadow-sm border bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-700 transition-colors duration-300">
@@ -65,7 +75,7 @@ const SideNav: React.FC = () => {
               hover:bg-primary hover:text-white
               dark:hover:bg-primary dark:hover:text-white
               
-              ${path.startsWith(menu.path) && "bg-primary text-white"}
+              ${isActive(menu.path) ? "bg-primary text-white" : ""}
               `}
             >
               <menu.icon className="h-6 w-6" />
