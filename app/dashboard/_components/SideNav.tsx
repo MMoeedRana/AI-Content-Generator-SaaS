@@ -65,7 +65,7 @@ const SideNav: React.FC = () => {
               hover:bg-primary hover:text-white
               dark:hover:bg-primary dark:hover:text-white
               
-              ${path === menu.path && "bg-primary text-white"}
+              ${path.startsWith(menu.path) && "bg-primary text-white"}
               `}
             >
               <menu.icon className="h-6 w-6" />

@@ -11,7 +11,7 @@ function Dashboard() {
       {/* Search Section */}
       <SearchSection onSearchInput={(value:string)=>setUserSearchInput(value)} />
 
-      {/* Template List Secction */}
+      {/* Template List Section */}
       <TemplateListSection userSearchInput={userSearchInput} />
     </div>
   )

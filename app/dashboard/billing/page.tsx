@@ -131,7 +131,7 @@ function Billing() {
           <Button
             disabled={loading || plan === "paid"}
             onClick={handleStripeCheckout}
-            className="mt-8 w-[80%] mx-auto rounded-full border px-8 py-3 text-sm font-medium text-indigo-600 dark:text-white bg-white dark:bg-indigo-600 border-indigo-600 hover:border-indigo-700 dark:hover:bg-indigo-700 flex gap-2 items-center justify-center"
+            className="mt-8 w-[80%] mx-auto rounded-full border px-8 py-3 text-sm font-medium text-indigo-600 dark:text-white bg-white hover:text-white dark:bg-indigo-600 border-indigo-600 hover:border-indigo-700 dark:hover:bg-indigo-700 flex gap-2 items-center justify-center"
           >
             {loading && <Loader2Icon className="animate-spin" />}
             {plan === "paid" ? "Subscribed (Monthly Plan)" : "Get Started"}
