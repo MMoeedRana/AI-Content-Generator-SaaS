@@ -5,7 +5,7 @@ import UsageTrack from "./UsageTrack";
 import React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { FileClock, Home, Settings, WalletCards } from "lucide-react";
+import { BarChart3Icon, FileClock, Home, Settings, WalletCards } from "lucide-react";
 
 interface MenuItem {
   name: string;
@@ -13,7 +13,7 @@ interface MenuItem {
   path: string;
 }
 
-const SideNav: React.FC = () => {
+const SideNav: React.FC = ({ closeMenu }: { closeMenu?: () => void }) => {
   const MenuList: MenuItem[] = [
     {
       name: "Home",
@@ -31,6 +31,11 @@ const SideNav: React.FC = () => {
       path: "/dashboard/billing",
     },
     {
+      name: "Analytics",
+      icon: BarChart3Icon,
+      path: "/dashboard/analytics",
+    },
+    {
       name: "Setting",
       icon: Settings,
       path: "/dashboard/setting",
@@ -39,7 +44,7 @@ const SideNav: React.FC = () => {
 
   const path = usePathname();
 
-  // ✅ Active tab logic (FIXED)
+  // Active tab logic (FIXED)
   const isActive = (menuPath: string) => {
     // Home tab
     if (menuPath === "/dashboard") {
@@ -67,7 +72,7 @@ const SideNav: React.FC = () => {
       {/* Menu */}
       <div className="mt-3">
         {MenuList.map((menu) => (
-          <Link href={menu.path} key={menu.path}>
+          <Link href={menu.path} key={menu.path} onClick={closeMenu}>
             <div
               className={`flex gap-2 mb-2 p-3 rounded-lg cursor-pointer items-center transition-colors duration-200
               
@@ -86,11 +91,11 @@ const SideNav: React.FC = () => {
       </div>
 
       {/* Bottom Usage */}
-      <div className="absolute bottom-10 left-0 w-full">
+      <div className="absolute bottom-15 left-0 w-full">
         <UsageTrack />
       </div>
     </div>
   );
 };
 
-export default SideNav;
+export default SideNav

@@ -9,8 +9,8 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="p-6 bg-white dark:bg-slate-900 border-t-2 border-gray-100 dark:border-slate-800 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+    <footer className="w-full p-6 bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 md:gap-6">
         
         {/* Left: Branding & Copyright */}
         <div className="flex flex-col items-center md:items-start gap-2">
@@ -25,15 +25,16 @@ const Footer = () => {
           </p>
         </div>
 
-        {/* Center: Quick Links */}
-        <div className="flex gap-6 text-sm font-medium text-gray-600 dark:text-gray-300">
+        {/* Center: Links */}
+        <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-sm font-medium text-gray-600 dark:text-gray-300">
           <Link href="/dashboard" className="hover:text-primary transition-colors">Home</Link>
           <Link href="/dashboard/history" className="hover:text-primary transition-colors">History</Link>
           <Link href="/dashboard/billing" className="hover:text-primary transition-colors">Billing</Link>
+          <Link href="/dashboard/analytics" className="hover:text-primary transition-colors">Analytics</Link>
           <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
         </div>
 
-        {/* Right: Social Icons & Made With */}
+        {/* Right: Social Icons & Credits */}
         <div className="flex flex-col items-center md:items-end gap-3">
           <div className="flex gap-4">
             <Link href="#" className="p-2 rounded-full bg-gray-50 dark:bg-slate-800 hover:bg-primary/10 transition-all">
@@ -55,4 +56,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default Footer

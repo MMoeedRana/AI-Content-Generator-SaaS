@@ -62,7 +62,7 @@ export default [
     desc: 'An AI tool that generates SEO-optimized, high-ranking YouTube video titles.',
     category: 'Youtube Tools',
     icon: 'https://cdn-icons-png.flaticon.com/128/3344/3344836.png',
-    aiPrompt: 'Generate 5 SEO-friendly YouTube video titles optimized for high rankings based on the provided keywords and outline.',
+    aiPrompt: 'Generate 5 SEO-friendly YouTube video titles optimized for high rankings based on the provided keywords and outline. Do NOT add explanations. Do NOT add tips or extra text. Do NOT use quotation marks. Output ONLY titles.  Make titles highly clickable (use numbers, power words). Provide the result in a bullet-point list. Titles in Bold.',
     slug: 'youtube-seo-title',
     form: [
       {
@@ -104,7 +104,7 @@ export default [
     desc: 'An AI tool that generates high-ranking YouTube tags for better video visibility.',
     category: 'Youtube Tools',
     icon: 'https://cdn-icons-png.flaticon.com/128/8359/8359651.png',
-    aiPrompt: 'Generate 10 relevant and high-ranking YouTube tags based on the provided title and outline.',
+    aiPrompt: 'You are a professional YouTube SEO assistant. Generate 10 relevant and high-ranking YouTube tags based on the provided title and outline. Include a mix of specific, broad, and trending keywords. Reflect the video’s main topic and target audience. Avoid repetition and irrelevant words. Format the output as a numbered list.',
     slug: 'youtube-tag',
     form: [
       {
@@ -231,7 +231,7 @@ export default [
     desc: 'AI Model to generate programming code in any language.',
     category: 'Programming',
     icon: 'https://cdn-icons-png.flaticon.com/128/7069/7069896.png',
-    aiPrompt: 'Generate a complete programming code snippet based on the provided programming language, functionality description, and requirements. Include comments for clarity.',
+    aiPrompt: 'Generate a complete programming code snippet based on the provided programming language, functionality description, and requirements. Include comments for clarity. Generate ONLY clean, production-ready code in the given programming language. Do NOT include any explanation. Return code inside a markdown code block but not used backticks and any other special chacacters signs for heading. Do not include headings or bullet points. Return ONLY pure code. Add only important comments inside code for clarity.',
     slug: 'write-code',
     form: [
       {

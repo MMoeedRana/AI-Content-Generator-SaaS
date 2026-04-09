@@ -8,46 +8,69 @@ import { UpdateCreditUsageContext } from "@/app/(context)/UpdateCreditUsageConte
 import { toast } from "sonner";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useCelebration } from "@/hook/useCelebration";
+
+let isToastShown = false;
 
 function UsageTrack() {
   const { user } = useUser();
   const [loading, setLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true); 
   const { totalUsage, setTotalUsage } = useContext(TotalUsageContext);
   const [maxWords, setMaxWords] = useState(10000);
   const [plan, setPlan] = useState("free");
-  const { updateCreditUsage, setUpdateCreditUsage } = useContext(
-    UpdateCreditUsageContext,
-  );
+  const { updateCreditUsage } = useContext(UpdateCreditUsageContext);
 
-  // Fetch total credits used from backend
-  React.useEffect(() => {
-    const fetchCredits = async () => {
-      if (!user?.primaryEmailAddress?.emailAddress) return;
-      try {
-        // API route to get total words used by user
-        const resp = await axios.get("/api/credits-usage", {
-          params: { email: user.primaryEmailAddress.emailAddress },
-        });
-        if (resp.data?.totalWords !== undefined) {
-          setTotalUsage(resp.data.totalWords);
-        }
-        if (resp.data?.maxWords !== undefined) {
-          setMaxWords(resp.data.maxWords);
-        }
-        if (resp.data?.plan) {
-          setPlan(resp.data.plan);
-        }
-      } catch (err) {
-        // ignore
+  const searchParams = useSearchParams();
+  const { fireSubscription } = useCelebration(); // Confetti trigger
+
+  // --- Success / Cancelled Toast & Confetti ---
+  useEffect(() => {
+    const success = searchParams.get("success");
+    const canceled = searchParams.get("canceled");
+
+    if (success && !isToastShown) {
+      fireSubscription(); // Celebration start
+      toast.success("Payment successful! Your plan is active.");
+      isToastShown = true;
+    }
+    if (canceled) toast.error("Payment cancelled.");
+  }, [searchParams, fireSubscription]);
+
+  const fetchCredits = async () => {
+    if (!user?.primaryEmailAddress?.emailAddress) return;
+    
+    setIsFetching(true); 
+    try {
+      const resp = await axios.get("/api/credits-usage", {
+        params: { email: user.primaryEmailAddress.emailAddress },
+      });
+
+      if (resp.data?.totalWords !== undefined) {
+        setTotalUsage(resp.data.totalWords);
       }
-    };
+      if (resp.data?.maxWords !== undefined) {
+        setMaxWords(resp.data.maxWords);
+      }
+      if (resp.data?.plan) {
+        setPlan(resp.data.plan);
+      }
+    } catch (err) {
+      console.error("Error fetching credits:", err);
+    } finally {
+      setIsFetching(false); 
+    }
+  };
+
+  useEffect(() => {
     fetchCredits();
-  }, [user?.primaryEmailAddress?.emailAddress]);
+  }, [user?.primaryEmailAddress?.emailAddress, updateCreditUsage]);
+
   const handleUpgrade = async () => {
     setLoading(true);
-    setUpdateCreditUsage(true);
     try {
-      const resp = await axios.post("/api/create-stripe-session", {});
+      const resp = await axios.post("/api/create-stripe-session");
       if (resp.data?.url) {
         window.location.href = resp.data.url;
       } else {
@@ -58,76 +81,69 @@ function UsageTrack() {
       toast.error("Stripe payment initialization failed.");
       setLoading(false);
     }
-    setUpdateCreditUsage(false);
   };
 
-  // Show toast when plan changes to paid
-  useEffect(() => {
-    if (plan === "paid") {
-      toast.success(
-        "Congratulations! Your subscription is now active. Enjoy premium features.",
-      );
-    }
-  }, [plan]);
-
-  // Helper for credits wording
-  const creditsLabel = plan === "paid" ? "credits" : "credits";
+  // --- SKELETON UI (Refresh par show hoga) ---
+  if (isFetching && totalUsage === 0) {
+    return (
+      <div className="m-5 animate-pulse">
+        <div className="bg-gray-200 dark:bg-slate-800 h-32 rounded-lg p-4">
+          <div className="h-4 bg-gray-300 dark:bg-slate-700 rounded w-1/2 mb-4"></div>
+          <div className="h-2.5 bg-gray-300 dark:bg-slate-700 rounded-full w-full mb-4"></div>
+          <div className="h-3 bg-gray-300 dark:bg-slate-700 rounded w-3/4"></div>
+        </div>
+        <div className="h-10 bg-gray-200 dark:bg-slate-800 rounded-lg mt-3 w-full"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="m-5">
-      <div className="bg-primary text-white p-3 rounded-lg">
-        <h2 className="font-medium">Credits</h2>
-        <div className="h-2 bg-[#9981f9] w-full rounded-full mt-3">
+      {/* Old UI Background and Colors */}
+      <div className="bg-primary text-white p-4 rounded-lg shadow-md transition-all">
+        <h2 className="font-medium text-lg">Credits</h2>
+
+        <div className="h-2.5 bg-[#9981f9] w-full rounded-full mt-3 overflow-hidden">
           <div
-            className="h-2 bg-white rounded-full"
-            // style={{
-            //   width: (totalUsage / maxWords) * 100 + "%",
-            // }}
+            className="h-full bg-white rounded-full transition-all duration-700 ease-in-out"
             style={{
               width: Math.min((totalUsage / maxWords) * 100, 100) + "%",
             }}
-          ></div>
+          />
         </div>
-        <h2 className="text-sm my-2">
-          {totalUsage}/{maxWords} {creditsLabel} used (
-          {plan === "paid" ? "Monthly Plan" : "Free Plan"})
+
+        <h2 className="text-sm my-3 font-light">
+          <span className="font-bold">{totalUsage.toLocaleString()}</span> / {maxWords.toLocaleString()} credits used
+          <span className="block text-[11px] mt-1 opacity-80 italic">
+            Current Plan: {plan === "paid" ? "Premium Plan Active" : "Free Tier"}
+          </span>
         </h2>
       </div>
-      {/* <Button
-        variant={"secondary"}
-        className="w-full my-3 text-primary"
-        onClick={handleUpgrade}
-      >
-        Upgrade
-      </Button> */}
-      {plan !== "paid" && (
+
+      {plan !== "paid" ? (
         <Button
           variant={"secondary"}
           disabled={loading}
-          className="w-full my-3 text-primary font-bold transition-all duration-300 
-                     hover:bg-white hover:scale-105 active:scale-95 shadow-sm 
-                     flex items-center justify-center gap-2"
+          className="w-full my-3 text-primary font-bold shadow-sm hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
           onClick={handleUpgrade}
         >
           {loading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              Processing...
+              Redirecting...
             </>
           ) : (
-            "Upgrade Plan"
+            "Upgrade to Pro"
           )}
         </Button>
-      )}
-      {plan === "paid" && (
+      ) : (
+        /* UI as per your request (Old button style) */
         <Button
           variant={"secondary"}
-          className="w-full my-3 text-primary"
-          onClick={handleUpgrade}
-          disabled={plan === "paid"}
+          className="w-full my-3 text-primary cursor-default opacity-90 font-semibold"
+          disabled
         >
-          {loading && <Loader2 className="animate-spin mr-2" />}
-          {plan === "paid" ? "Subscribed (Monthly Plan)" : "Upgrade"}
+          Premium Membership
         </Button>
       )}
     </div>

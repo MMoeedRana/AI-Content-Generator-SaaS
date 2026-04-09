@@ -79,3 +79,13 @@ input,
 textarea {
   @apply shadow-md px-6 py-2 border border-slate-300;
 }
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 2.5s linear infinite;
+}
