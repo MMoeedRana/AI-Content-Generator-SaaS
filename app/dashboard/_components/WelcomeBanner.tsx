@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
@@ -10,15 +11,12 @@ function WelcomeBanner() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    // Sirf tab chale jab user data load ho jaye
     if (isLoaded && user) {
       const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
       
-      // Agar localStorage mein ye key nahi hai, sirf tabhi show karo
       if (!hasSeenWelcome) {
         setShow(true);
         
-        // Light Confetti
         confetti({
           particleCount: 80,
           spread: 70,
@@ -26,18 +24,13 @@ function WelcomeBanner() {
           colors: ["#9981f9", "#ffffff"]
         });
 
-        // LocalStorage foran set kar dein taake refresh par dobara na aaye
         localStorage.setItem("hasSeenWelcome", "true");
 
-        // 8 seconds baad hide kar dein
         const timer = setTimeout(() => setShow(false), 8000);
         return () => clearTimeout(timer);
       }
     }
   }, [user, isLoaded]);
-
-  // Agar user logout ho jaye to localStorage reset kar sakte hain (Optional)
-  // Is se agli baar login par phir se dikhega
 
   return (
     <AnimatePresence>
@@ -66,7 +59,7 @@ function WelcomeBanner() {
                   Welcome, {user?.firstName || "User"}! 🎉
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 leading-relaxed">
-                  Your **AI Content Journey** starts here. We've credited your account with free tokens!
+                  Your AI Content Journey starts here. We've credited your account with free tokens!
                 </p>
               </div>
             </div>
@@ -87,4 +80,4 @@ function WelcomeBanner() {
   );
 }
 
-export default WelcomeBanner;
+export default WelcomeBanner

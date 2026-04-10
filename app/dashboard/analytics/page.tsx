@@ -6,6 +6,7 @@ import { BarChart3 } from "lucide-react";
 
 const AnalyticsContent = dynamic(() => import("./_components/AnalyticsContent"), {
   ssr: false,
+  
   loading: () => <LoadingFallback />
 });
 
