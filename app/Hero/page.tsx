@@ -10,21 +10,32 @@ const Hero: React.FC = () => {
   return (
     <div className="min-h-screen dark:bg-slate-900">
       {/* Header Section */}
-      <header className="sticky flex justify-between items-center px-8 py-4 shadow-md bg-white dark:bg-slate-800">
+      <header className="sticky flex justify-between items-center px-8 py-4 shadow-md bg-white dark:bg-slate-800 transition-colors duration-300">
         <div className="flex items-center ml-12">
+          {/* Light Mode Logo */}
           <Image
-            src="/logo.svg"
-            alt="Logo"
-            width={100}
-            height={100}
-            className="w-36 h-12"
+            src="/logo.png" // Light mode logo path
+            alt="GenFlow AI Logo"
+            width={1000} // Set a high base width for responsiveness
+            height={1000} // Set a high base height for responsiveness
+            className="block dark:hidden w-auto h-12" // Displays only in light mode, height 48px
+            priority
+          />
+          {/* Dark Mode Logo */}
+          <Image
+            src="/logo-dark.png" // Dark mode logo path
+            alt="GenFlow AI Logo Dark"
+            width={140} // Base width for dark logo
+            height={60} // Base height for dark logo
+            className="hidden dark:block w-auto h-12" // Displays only in dark mode, height 48px
+            priority
           />
         </div>
         <div className='px-12 flex items-center space-x-2'>
           {/* Clerk SignInButton wrapped inside Button */}
           <SignInButton forceRedirectUrl={'/dashboard'}>
             <Button className="text-sm px-4 py-2 bg-transparent border-none shadow-none focus:outline-none hover:cursor-pointer hover:bg-white dark:hover:bg-slate-700 text-gray-700 dark:text-gray-100 flex items-center space-x-2">
-              <Users2Icon />
+              <Users2Icon className="h-5 w-5" />
               <span>Get Started</span>
             </Button>
           </SignInButton>
@@ -32,7 +43,7 @@ const Hero: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="text-center py-20 px-4 text-gray-900 dark:text-gray-100">
+      <main className="text-center py-20 px-4 text-gray-900 dark:text-gray-100 transition-colors duration-300">
         <div className='flex justify-center items-center'>
           <button className='border-2 border-gray-200 dark:border-gray-600 rounded-full px-16 py-1 my-4 mr-3 flex items-center justify-between'>
             Membership - Join Now 
@@ -80,7 +91,7 @@ const Hero: React.FC = () => {
         ].map((feature, index) => (
           <div
             key={index}
-            className="flex flex-col items-center text-center p-6"
+            className="flex flex-col items-center text-center p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 transition-all duration-300 hover:shadow-md"
           >
             <div className="w-12 h-12 bg-blue-600 text-white flex items-center justify-center rounded-xl mb-4">
               {feature.icon}
@@ -99,4 +110,4 @@ const Hero: React.FC = () => {
   );
 };
 
-export default Hero;
+export default Hero

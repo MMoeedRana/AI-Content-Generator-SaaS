@@ -15,10 +15,24 @@ const Footer = () => {
         {/* Left: Branding & Copyright */}
         <div className="flex flex-col items-center md:items-start gap-2">
           <div className="flex items-center gap-2">
-            <Image src="/logo.svg" alt="logo" width={30} height={30} />
-            <span className="font-bold text-lg text-primary dark:text-purple-400">
-              PromptForge
-            </span>
+            {/* Light Mode Logo */}
+            <Image 
+              src="/logo.png" 
+              alt="GenFlow AI Logo" 
+              width={1000}
+              height={1000}
+              className="block dark:hidden w-auto h-12" 
+              priority
+            />
+            {/* Dark Mode Logo */}
+            <Image 
+              src="/logo-dark.png" 
+              alt="GenFlow AI Logo Dark" 
+              width={140} 
+              height={60}
+              className="hidden dark:block w-auto h-12" 
+              priority
+            />
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             © {currentYear} All rights reserved.

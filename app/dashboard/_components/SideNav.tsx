@@ -62,8 +62,26 @@ const SideNav: React.FC = ({ closeMenu }: { closeMenu?: () => void }) => {
     <div className="h-screen relative p-5 shadow-sm border bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-700 transition-colors duration-300">
       
       {/* Logo */}
-      <div className="flex justify-center">
-        <Image src="/logo.svg" alt="logo" width={100} height={100} />
+      <div className="flex justify-center mb-4">
+        {/* Light Mode Logo */}
+        <Image
+          src="/logo.png"
+          alt="GenFlow AI Logo"
+          width={140}
+          height={60}
+          className="block dark:hidden w-auto h-12"
+          priority
+        />
+
+        {/* Dark Mode Logo */}
+        <Image
+          src="/logo-dark.png"
+          alt="GenFlow AI Logo Dark"
+          width={140}
+          height={60}
+          className="hidden dark:block w-auto h-12"
+          priority
+        />
       </div>
 
       {/* Divider */}

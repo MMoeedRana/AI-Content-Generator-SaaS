@@ -9,8 +9,12 @@ import { ThemeProvider } from "./dashboard/_components/theme-provider";
 const inter=Outfit({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "PromptForge - AI Content Generator",
-  description: "Unleash your creativity with PromptForge, the ultimate AI content generator. Create stunning visuals, engaging text, and more with ease. Try it now and transform your ideas into reality!",
+  title: "GenFlow AI - AI Content Generator",
+  description: "Unleash your creativity with GenFlow AI, the ultimate AI content generator. Create stunning visuals, engaging text, and more with ease. Try it now and transform your ideas into reality!",
+  icons: {
+    icon: "/icon.png", 
+    apple: "/icon.png", 
+  },
 };
 
 export default function RootLayout({
