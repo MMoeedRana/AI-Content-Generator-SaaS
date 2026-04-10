@@ -18,3 +18,13 @@ export const UserSubscription = pgTable("userSubscription", {
   paymentId: varchar("paymentId", { length: 255 }),
   joinDate: varchar("joinDate", { length: 255 }),
 });
+
+export const UserReviews = pgTable('userReviews', {
+    id: serial('id').primaryKey(),
+    userName: varchar('userName').notNull(),
+    userEmail: varchar('userEmail').notNull(),
+    userImage: varchar('userImage'),
+    rating: integer('rating').notNull(), // 1 to 5 stars
+    reviewText: text('reviewText'),
+    createdAt: varchar('createdAt').notNull(),
+});
