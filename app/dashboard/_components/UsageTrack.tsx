@@ -2,7 +2,7 @@
 
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, Suspense } from "react";
 import { TotalUsageContext } from "@/app/(context)/TotalUsageContext";
 import { UpdateCreditUsageContext } from "@/app/(context)/UpdateCreditUsageContext";
 import { toast } from "sonner";
@@ -14,6 +14,14 @@ import { useCelebration } from "@/hook/useCelebration";
 let isToastShown = false;
 
 function UsageTrack() {
+  return (
+    <Suspense fallback={<div className="m-5 animate-pulse h-32 bg-gray-200 dark:bg-slate-800 rounded-lg"></div>}>
+      <UsageTrackContent />
+    </Suspense>
+  );
+}
+
+function UsageTrackContent() {
   const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true); 
@@ -23,15 +31,14 @@ function UsageTrack() {
   const { updateCreditUsage } = useContext(UpdateCreditUsageContext);
 
   const searchParams = useSearchParams();
-  const { fireSubscription } = useCelebration(); // Confetti trigger
+  const { fireSubscription } = useCelebration();
 
-  // --- Success / Cancelled Toast & Confetti ---
   useEffect(() => {
     const success = searchParams.get("success");
     const canceled = searchParams.get("canceled");
 
     if (success && !isToastShown) {
-      fireSubscription(); // Celebration start
+      fireSubscription();
       toast.success("Payment successful! Your plan is active.");
       isToastShown = true;
     }
@@ -40,22 +47,14 @@ function UsageTrack() {
 
   const fetchCredits = async () => {
     if (!user?.primaryEmailAddress?.emailAddress) return;
-    
     setIsFetching(true); 
     try {
       const resp = await axios.get("/api/credits-usage", {
         params: { email: user.primaryEmailAddress.emailAddress },
       });
-
-      if (resp.data?.totalWords !== undefined) {
-        setTotalUsage(resp.data.totalWords);
-      }
-      if (resp.data?.maxWords !== undefined) {
-        setMaxWords(resp.data.maxWords);
-      }
-      if (resp.data?.plan) {
-        setPlan(resp.data.plan);
-      }
+      if (resp.data?.totalWords !== undefined) setTotalUsage(resp.data.totalWords);
+      if (resp.data?.maxWords !== undefined) setMaxWords(resp.data.maxWords);
+      if (resp.data?.plan) setPlan(resp.data.plan);
     } catch (err) {
       console.error("Error fetching credits:", err);
     } finally {
@@ -83,7 +82,6 @@ function UsageTrack() {
     }
   };
 
-  // --- SKELETON UI (Refresh par show hoga) ---
   if (isFetching && totalUsage === 0) {
     return (
       <div className="m-5 animate-pulse">
@@ -99,19 +97,14 @@ function UsageTrack() {
 
   return (
     <div className="m-5">
-      {/* Old UI Background and Colors */}
       <div className="bg-primary text-white p-4 rounded-lg shadow-md transition-all">
         <h2 className="font-medium text-lg">Credits</h2>
-
         <div className="h-2.5 bg-[#9981f9] w-full rounded-full mt-3 overflow-hidden">
           <div
             className="h-full bg-white rounded-full transition-all duration-700 ease-in-out"
-            style={{
-              width: Math.min((totalUsage / maxWords) * 100, 100) + "%",
-            }}
+            style={{ width: Math.min((totalUsage / maxWords) * 100, 100) + "%" }}
           />
         </div>
-
         <h2 className="text-sm my-3 font-light">
           <span className="font-bold">{totalUsage.toLocaleString()}</span> / {maxWords.toLocaleString()} credits used
           <span className="block text-[11px] mt-1 opacity-80 italic">
@@ -128,21 +121,11 @@ function UsageTrack() {
           onClick={handleUpgrade}
         >
           {loading ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Redirecting...
-            </>
-          ) : (
-            "Upgrade to Pro"
-          )}
+            <><Loader2 className="h-4 w-4 animate-spin" /> Redirecting...</>
+          ) : ("Upgrade to Pro")}
         </Button>
       ) : (
-        /* UI as per your request (Old button style) */
-        <Button
-          variant={"secondary"}
-          className="w-full my-3 text-primary cursor-default opacity-90 font-semibold"
-          disabled
-        >
+        <Button variant={"secondary"} className="w-full my-3 text-primary cursor-default opacity-90 font-semibold" disabled>
           Premium Membership
         </Button>
       )}
@@ -150,4 +133,4 @@ function UsageTrack() {
   );
 }
 
-export default UsageTrack;
+export default UsageTrack

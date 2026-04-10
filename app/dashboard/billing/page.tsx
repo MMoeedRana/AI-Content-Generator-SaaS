@@ -4,12 +4,20 @@ import axios from "axios";
 import { useUser } from "@clerk/nextjs";
 import { Loader2Icon, CheckCircle2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import { useCelebration } from "@/hook/useCelebration";
 
 function Billing() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading Billing...</div>}>
+      <BillingContent />
+    </Suspense>
+  );
+}
+
+function BillingContent() {
   const [loading, setLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [plan, setPlan] = useState("free");
@@ -20,7 +28,6 @@ function Billing() {
   const searchParams = useSearchParams();
   const { fireSubscription } = useCelebration();
 
-  // Success Celebration Logic
   useEffect(() => {
     if (searchParams.get("success")) {
       fireSubscription();
@@ -56,8 +63,7 @@ function Billing() {
           params: { email: user.primaryEmailAddress.emailAddress },
         });
         if (resp.data?.plan) setPlan(resp.data.plan);
-        if (resp.data?.totalWords !== undefined)
-          setCreditsUsed(resp.data.totalWords);
+        if (resp.data?.totalWords !== undefined) setCreditsUsed(resp.data.totalWords);
         if (resp.data?.maxWords !== undefined) setMaxWords(resp.data.maxWords);
       } catch (error) {
         console.error("Fetch plan error:", error);
@@ -110,14 +116,10 @@ function Billing() {
 
         {/* Monthly Plan */}
         <div className={`rounded-2xl bg-white dark:bg-gray-800 border-2 ${plan === 'paid' ? 'border-green-500 shadow-green-100/50' : 'border-indigo-500'} p-6 md:p-8 h-full flex flex-col justify-between shadow-lg relative transition-all duration-500`}>
-          {plan === 'paid' ? (
+          {plan === 'paid' && (
              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-green-500 text-white px-4 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-md animate-bounce">
                 <Sparkles className="w-3 h-3"/> ACTIVE PLAN
              </div>
-          ) : (
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-600 text-white px-4 py-1 rounded-full text-xs font-bold tracking-wide shadow-md">
-                MOST POPULAR
-            </div>
           )}
 
           <div>
