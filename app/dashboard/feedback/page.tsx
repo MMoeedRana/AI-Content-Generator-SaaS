@@ -41,7 +41,7 @@ function Feedback() {
         colors: ['#4F46E5', '#10B981', '#F59E0B']
       });
 
-      toast.success("Shukriya! Your feedback is saved.");
+      toast.success("Thanks for your feedback!");
       setReview("");
       setRating(0);
     } catch (e) {
@@ -59,7 +59,7 @@ function Feedback() {
             <Heart className="text-primary w-8 h-8 fill-primary" />
           </div>
           <h1 className="text-3xl font-bold dark:text-white">Share Your Experience</h1>
-          <p className="text-gray-500 mt-2 text-sm">GenFlow AI ko top-notch banane mein hamari help karein.</p>
+          <p className="text-gray-500 mt-2 text-sm">Help us make GenFlow AI top-notch! Your feedback drives our innovation.</p>
         </div>
 
         {/* Stars */}
@@ -83,7 +83,7 @@ function Feedback() {
         />
 
         <Button 
-          className="w-full py-7 rounded-xl text-lg flex gap-2 transition-all hover:shadow-lg active:scale-[0.98]"
+          className="w-full py-7 rounded-xl text-lg flex gap-2 transition-all hover:shadow-lg active:scale-[0.98] dark:text-white"
           onClick={handleSubmit}
           disabled={loading}
         >

@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Menu, Search } from "lucide-react";
+import { Menu, Search, MessageSquareHeart } from "lucide-react"; 
 import { UserButton, useUser } from "@clerk/nextjs";
 import { ModeToggle } from "./ModeToggle";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import SideNav from "./SideNav";
 import axios from "axios";
+import Link from "next/link"; 
 
 function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -36,7 +37,7 @@ function Header() {
         } catch (error) {
           console.error("Error checking plan in header:", error);
         } finally {
-          setPlanLoading(false); // Response milte hi false
+          setPlanLoading(false);
         }
       }
     };
@@ -93,7 +94,11 @@ function Header() {
             </h2>
           )}
         </div>
-
+        <Link href="/dashboard/feedback" title="Give Feedback">
+          <div className="p-2 bg-gray-100 dark:bg-slate-800 rounded-full cursor-pointer hover:bg-primary/10 transition-all group border dark:border-slate-700">
+            <MessageSquareHeart className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors" />
+          </div>
+        </Link>
         <ModeToggle />
         <UserButton />
       </div>
@@ -101,4 +106,4 @@ function Header() {
   );
 }
 
-export default Header;
+export default Header

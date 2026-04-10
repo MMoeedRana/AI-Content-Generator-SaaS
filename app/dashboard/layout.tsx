@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import SideNav from './_components/SideNav';
 import Header from './_components/Header';
 import { TotalUsageContext } from '../(context)/TotalUsageContext';
@@ -19,16 +19,50 @@ function layout({
 
   const [totalUsage, setTotalUsage] = useState<Number>(0);
   const [userSubscription, setUserSubscription] = useState<boolean>(false);
-  const [updateCreditUsage, setUpdateCreditUsage] = useState<any>()
+  const [updateCreditUsage, setUpdateCreditUsage] = useState<any>();
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  // Listen for sidebar collapse changes
+  useEffect(() => {
+    const savedState = localStorage.getItem("sidebarCollapsed");
+    if (savedState !== null) {
+      setIsSidebarCollapsed(savedState === "true");
+    }
+
+    const handleSidebarToggle = (event: CustomEvent) => {
+      setIsSidebarCollapsed(event.detail.collapsed);
+    };
+
+    window.addEventListener('sidebarToggle', handleSidebarToggle as EventListener);
+    
+    return () => {
+      window.removeEventListener('sidebarToggle', handleSidebarToggle as EventListener);
+    };
+  }, []);
+
+  const handleSidebarCollapse = (collapsed: boolean) => {
+    setIsSidebarCollapsed(collapsed);
+  };
 
   return (
     <TotalUsageContext.Provider value={{ totalUsage, setTotalUsage }}>
       <UpdateCreditUsageContext.Provider value={{ updateCreditUsage, setUpdateCreditUsage }}>
         <div className='bg-slate-100 dark:bg-gray-950 h-screen overflow-x-hidden'>
-          <div className='md:w-64 hidden md:block fixed'>
-            <SideNav />
+          {/* Sidebar - fixed width with transition */}
+          <div 
+            className={`fixed transition-all duration-300 z-50 ${
+              isSidebarCollapsed ? 'w-20' : 'w-64'
+            }`}
+          >
+            <SideNav onCollapseChange={handleSidebarCollapse} />
           </div>
-          <div className='md:ml-64 flex flex-col min-h-screen'>
+          
+          {/* Main Content - dynamic margin that changes with collapse */}
+          <div 
+            className={`flex flex-col min-h-screen transition-all duration-300 ${
+              isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
+            }`}
+          >
             <Header />
             
             <main className="flex-grow">
@@ -47,4 +81,4 @@ function layout({
   )
 }
 
-export default layout;
+export default layout
