@@ -5,14 +5,7 @@ import UsageTrack from "./UsageTrack";
 import React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import {
-  BarChart3Icon,
-  FileClock,
-  Home,
-  Settings,
-  WalletCards,
-  MessageSquareHeart,
-} from "lucide-react";
+import { BarChart3Icon, FileClock, Home, MessageSquareHeart, Settings, WalletCards } from "lucide-react";
 
 interface MenuItem {
   name: string;
@@ -20,7 +13,7 @@ interface MenuItem {
   path: string;
 }
 
-const SideNav: React.FC<{ closeMenu?: () => void }> = ({ closeMenu }) => {
+const SideNav: React.FC = ({ closeMenu }: { closeMenu?: () => void }) => {
   const MenuList: MenuItem[] = [
     {
       name: "Home",
@@ -43,7 +36,7 @@ const SideNav: React.FC<{ closeMenu?: () => void }> = ({ closeMenu }) => {
       path: "/dashboard/analytics",
     },
     {
-      name: "Feedback", // Naya Feedback item
+      name: "Feedback",
       icon: MessageSquareHeart,
       path: "/dashboard/feedback",
     },
@@ -58,15 +51,21 @@ const SideNav: React.FC<{ closeMenu?: () => void }> = ({ closeMenu }) => {
 
   const isActive = (menuPath: string) => {
     if (menuPath === "/dashboard") {
-      return path === "/dashboard" || path.startsWith("/dashboard/content");
+      return (
+        path === "/dashboard" ||
+        path.startsWith("/dashboard/content")
+      );
     }
+
     return path.startsWith(menuPath);
   };
 
   return (
     <div className="h-screen relative p-5 shadow-sm border bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-700 transition-colors duration-300">
-      {/* Logo Section */}
+      
+      {/* Logo */}
       <div className="flex justify-center mb-4">
+        {/* Light Mode Logo */}
         <Image
           src="/logo.png"
           alt="GenFlow AI Logo"
@@ -75,6 +74,8 @@ const SideNav: React.FC<{ closeMenu?: () => void }> = ({ closeMenu }) => {
           className="block dark:hidden w-auto h-12"
           priority
         />
+
+        {/* Dark Mode Logo */}
         <Image
           src="/logo-dark.png"
           alt="GenFlow AI Logo Dark"
@@ -85,17 +86,20 @@ const SideNav: React.FC<{ closeMenu?: () => void }> = ({ closeMenu }) => {
         />
       </div>
 
+      {/* Divider */}
       <hr className="my-6 border-gray-300 dark:border-slate-600" />
 
-      {/* Menu List */}
+      {/* Menu */}
       <div className="mt-3">
         {MenuList.map((menu) => (
           <Link href={menu.path} key={menu.path} onClick={closeMenu}>
             <div
               className={`flex gap-2 mb-2 p-3 rounded-lg cursor-pointer items-center transition-colors duration-200
+              
               text-gray-700 dark:text-gray-300
               hover:bg-primary hover:text-white
               dark:hover:bg-primary dark:hover:text-white
+              
               ${isActive(menu.path) ? "bg-primary text-white" : ""}
               `}
             >
@@ -106,12 +110,12 @@ const SideNav: React.FC<{ closeMenu?: () => void }> = ({ closeMenu }) => {
         ))}
       </div>
 
-      {/* Bottom Usage Track */}
-      <div className="absolute bottom-10 left-0 w-full px-5">
+      {/* Bottom Usage */}
+      <div className="absolute bottom-15 left-0 w-full">
         <UsageTrack />
       </div>
     </div>
   );
 };
 
-export default SideNav;
+export default SideNav
