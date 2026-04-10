@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import {
   AreaChart,
   Area,
@@ -28,8 +28,16 @@ import axios from "axios";
 
 const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#00C49F"];
 
-function AnalyticsDashboard() {
-  const { user } = useUser(); 
+export default function AnalyticsDashboard() {
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <AnalyticsContent />
+    </Suspense>
+  );
+}
+
+function AnalyticsContent() {
+  const { user } = useUser();
   const [loading, setLoading] = useState(true);
   const [isPremium, setIsPremium] = useState(false);
   const [stats, setStats] = useState<any>(null);
@@ -57,19 +65,7 @@ function AnalyticsDashboard() {
     }
   };
 
-  // Corrected Loading State with full screen height
-  if (loading)
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-slate-950 px-4 text-center">
-        <div className="animate-pulse flex flex-col items-center">
-           <BarChart3 className="h-16 w-16 text-gray-300 mb-4" />
-           <p className="text-gray-500 font-medium text-xl">
-             Gathering your insights...
-           </p>
-           <p className="text-gray-400 text-sm mt-2">Please wait while we calculate your performance.</p>
-        </div>
-      </div>
-    );
+  if (loading) return <LoadingState />;
 
   return (
     <div className="p-4 md:p-8 space-y-6 md:space-y-8 bg-gray-50 dark:bg-slate-950 min-h-screen">
@@ -243,7 +239,22 @@ function AnalyticsDashboard() {
   );
 }
 
-// Stats Card Component
+function LoadingState() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-slate-950 px-4 text-center">
+      <div className="animate-pulse flex flex-col items-center">
+        <BarChart3 className="h-16 w-16 text-gray-300 mb-4" />
+        <p className="text-gray-500 font-medium text-xl">
+          Gathering your insights...
+        </p>
+        <p className="text-gray-400 text-sm mt-2">
+          Please wait while we calculate your performance.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function StatCard({ title, value, icon, trend }: any) {
   return (
     <div className="bg-white dark:bg-slate-900 p-5 md:p-6 rounded-2xl border border-gray-200 dark:border-slate-800 hover:border-primary/50 transition-all group shadow-sm">
@@ -267,7 +278,6 @@ function StatCard({ title, value, icon, trend }: any) {
   );
 }
 
-// Lock Overlay Component
 function LockOverlay({ message }: { message: string }) {
   return (
     <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/40 dark:bg-slate-900/40 backdrop-blur-[4px] rounded-2xl transition-all p-4">
@@ -291,5 +301,3 @@ function LockOverlay({ message }: { message: string }) {
     </div>
   );
 }
-
-export default AnalyticsDashboard;
