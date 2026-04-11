@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import moment from "moment";
-import { Trash2, Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import axios from "axios";
-import { useRouter, usePathname } from "next/navigation";
+import moment from "moment";
+import Image from "next/image";
+import { toast } from "sonner";
 import Templates from "@/app/(data)/Templates";
+import { Button } from "@/components/ui/button";
 import CopyButton from "../_components/CopyButton";
+import React, { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { Trash2, Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 function HistoryList({ initialHistory, currentPage, totalRecords, limit, dbSearchTerm }: any) {
   const [historyList, setHistoryList] = useState(initialHistory);

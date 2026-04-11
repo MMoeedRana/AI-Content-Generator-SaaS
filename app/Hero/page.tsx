@@ -14,25 +14,24 @@ const Hero: React.FC = () => {
         <div className="flex items-center ml-12">
           {/* Light Mode Logo */}
           <Image
-            src="/logo.png" // Light mode logo path
+            src="/logo.png"
             alt="GenFlow AI Logo"
-            width={1000} // Set a high base width for responsiveness
-            height={1000} // Set a high base height for responsiveness
-            className="block dark:hidden w-auto h-12" // Displays only in light mode, height 48px
+            width={1000}
+            height={1000}
+            className="block dark:hidden w-auto h-12" 
             priority
           />
           {/* Dark Mode Logo */}
           <Image
-            src="/logo-dark.png" // Dark mode logo path
+            src="/logo-dark.png" 
             alt="GenFlow AI Logo Dark"
-            width={140} // Base width for dark logo
-            height={60} // Base height for dark logo
-            className="hidden dark:block w-auto h-12" // Displays only in dark mode, height 48px
+            width={140}
+            height={60} 
+            className="hidden dark:block w-auto h-12"
             priority
           />
         </div>
         <div className='px-12 flex items-center space-x-2'>
-          {/* Clerk SignInButton wrapped inside Button */}
           <SignInButton forceRedirectUrl={'/dashboard'}>
             <Button className="text-sm px-4 py-2 bg-transparent border-none shadow-none focus:outline-none hover:cursor-pointer hover:bg-white dark:hover:bg-slate-700 text-gray-700 dark:text-gray-100 flex items-center space-x-2">
               <Users2Icon className="h-5 w-5" />

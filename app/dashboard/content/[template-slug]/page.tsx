@@ -1,24 +1,24 @@
 "use client";
 
-import React, { useContext, useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import axios from "axios";
 import moment from "moment";
 import Link from "next/link";
+import { toast } from "sonner";
 import { db } from "@/utils/db";
+import { eq, and } from "drizzle-orm";
 import { useUser } from "@clerk/nextjs";
 import { ArrowLeft } from "lucide-react";
 import { AIOutput } from "@/utils/schema";
-import { aiClient, AI_MODEL_NAME } from "@/utils/AiModal";
+import Loading from "../_components/Loading";
 import Templates from "@/app/(data)/Templates";
 import { Button } from "@/components/ui/button";
 import FormSection from "../_components/FormSection";
 import OutputSection from "../_components/OutputSection";
+import { aiClient, AI_MODEL_NAME } from "@/utils/AiModal";
+import { useSearchParams, useRouter } from "next/navigation";
 import { TotalUsageContext } from "@/app/(context)/TotalUsageContext";
+import React, { useContext, useState, useEffect, Suspense } from "react";
 import { UpdateCreditUsageContext } from "@/app/(context)/UpdateCreditUsageContext";
-import { toast } from "sonner";
-import Loading from "../_components/Loading";
-import { eq, and } from "drizzle-orm";
-import axios from "axios";
 
 interface PROPS {
   params: Promise<{ "template-slug": string }>;
@@ -43,6 +43,7 @@ function CreateContentLogic(props: PROPS) {
   const [loading, setLoading] = useState(false);
   const [aiOutput, setAiOutput] = useState<string>("");
   const [isPremium, setIsPremium] = useState(false);
+  const [planLoading, setPlanLoading] = useState(true);
   const [writeCodeUsage, setWriteCodeUsage] = useState(0);
   const [historyFormData, setHistoryFormData] = useState<any>(null);
 
@@ -59,12 +60,17 @@ function CreateContentLogic(props: PROPS) {
   }, [user, editId, selectedTemplate]);
 
   const checkUserStatus = async () => {
+    setPlanLoading(true);
     try {
       const resp = await axios.get("/api/credits-usage", {
         params: { email: user?.primaryEmailAddress?.emailAddress },
       });
       if (resp.data?.plan === "paid") setIsPremium(true);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error("Error checking status:", e);
+    } finally {
+      setPlanLoading(false);
+    }
   };
 
   const getTemplateSpecificUsage = async () => {
@@ -156,6 +162,7 @@ function CreateContentLogic(props: PROPS) {
             loading={loading}
             defaultValues={historyFormData}
             isPremium={isPremium}
+            planLoading={planLoading}
             usageCount={writeCodeUsage}
           />
           <div className="md:col-span-2">

@@ -1,5 +1,7 @@
 "use client";
+
 import React from "react";
+import Image from "next/image";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -7,7 +9,6 @@ import {
   AlertDialogDescription,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import Image from "next/image";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 
 interface LoadingProps {

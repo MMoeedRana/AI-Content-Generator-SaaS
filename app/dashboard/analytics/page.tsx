@@ -1,7 +1,7 @@
 "use client";
 
-import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
+import React, { Suspense } from "react";
 import { BarChart3 } from "lucide-react";
 
 const AnalyticsContent = dynamic(() => import("./_components/AnalyticsContent"), {

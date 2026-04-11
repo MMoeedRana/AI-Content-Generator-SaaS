@@ -1,6 +1,10 @@
 "use client";
 
+import axios from "axios";
+import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
 import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell
@@ -8,10 +12,6 @@ import {
 import {
   TrendingUp, Zap, FileText, Lock, Sparkles, Clock, BarChart3, Loader2Icon
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useUser } from "@clerk/nextjs";
-import axios from "axios";
-import { toast } from "sonner";
 
 const COLORS = ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981"];
 

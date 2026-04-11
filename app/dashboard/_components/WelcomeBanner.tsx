@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
 import { useUser } from "@clerk/nextjs";
 import { Sparkles, X } from "lucide-react";
-import confetti from "canvas-confetti";
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 function WelcomeBanner() {
   const { user, isLoaded } = useUser();

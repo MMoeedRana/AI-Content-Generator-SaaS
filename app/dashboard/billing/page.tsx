@@ -1,13 +1,13 @@
 "use client";
 
 import axios from "axios";
-import { useUser } from "@clerk/nextjs";
-import { Loader2Icon, CheckCircle2, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import React, { useState, useEffect, Suspense } from "react";
 import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { useCelebration } from "@/hook/useCelebration";
+import React, { useState, useEffect, Suspense } from "react";
+import { Loader2Icon, CheckCircle2, Sparkles } from "lucide-react";
 
 function Billing() {
   return (

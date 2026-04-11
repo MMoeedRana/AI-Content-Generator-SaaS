@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Menu, Search, MessageSquareHeart } from "lucide-react"; 
-import { UserButton, useUser } from "@clerk/nextjs";
-import { ModeToggle } from "./ModeToggle";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import SideNav from "./SideNav";
 import axios from "axios";
 import Link from "next/link"; 
+import SideNav from "./SideNav";
+import { ModeToggle } from "./ModeToggle";
+import React, { useState, useEffect } from "react";
+import { UserButton, useUser } from "@clerk/nextjs";
+import { Menu, Search, MessageSquareHeart } from "lucide-react"; 
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 function Header() {
   const [isScrolled, setIsScrolled] = useState(false);

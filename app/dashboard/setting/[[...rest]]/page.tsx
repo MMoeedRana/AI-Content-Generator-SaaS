@@ -1,9 +1,9 @@
 "use client"
 
 import React from 'react'
-import { UserProfile } from '@clerk/nextjs'
 import { dark } from '@clerk/themes'
 import { useTheme } from 'next-themes' 
+import { UserProfile } from '@clerk/nextjs'
 
 function Settings() {
   const { theme } = useTheme();
