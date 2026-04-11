@@ -147,13 +147,11 @@ function CreateContentLogic(props: PROPS) {
   };
 
   return (
-    // Fixed padding to ensure content starts from top
-    <div className="p-4 md:p-10 dark:bg-slate-900 min-h-screen">
+    <div className="p-5 md:p-10 dark:bg-slate-900 min-h-screen">
       <Loading loading={loading} />
       <div className="max-w-7xl mx-auto">
-        {/* Compact margin on link */}
         <Link href={"/dashboard"}>
-          <Button variant="outline" size="sm" className="flex gap-2 mb-4 md:mb-6">
+          <Button variant="outline" className="flex gap-2 mb-6">
             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
           </Button>
         </Link>
